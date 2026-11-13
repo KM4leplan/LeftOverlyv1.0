@@ -335,4 +335,34 @@
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 isSignUpMode = !isSignUpMode;
-                statusM
+                statusMessage.classList.add('hidden');
+
+                fullnameField.classList.toggle('hidden', !isSignUpMode);
+                nameInput.required = isSignUpMode;
+                loginOptions.classList.toggle('hidden', isSignUpMode);
+
+                formTitle.textContent = isSignUpMode ? 'Create Account' : 'Welcome Back!';
+                formSubtitle.textContent = isSignUpMode ? 'Start tracking your food.' : 'Log in to your pantry.';
+                submitBtn.textContent = isSignUpMode ? 'Sign Up' : 'Login';
+                dividerText.textContent = isSignUpMode ? 'Or sign up with' : 'Or log in with';
+                switchModeText.innerHTML = isSignUpMode
+                    ? 'Already have an account? <a href="#" id="toggle-mode-link" class="text-brand-green hover:text-brand-darkGreen font-semibold underline underline-offset-2 transition-colors">Login</a>'
+                    : 'Don\'t have an account? <a href="#" id="toggle-mode-link" class="text-brand-green hover:text-brand-darkGreen font-semibold underline underline-offset-2 transition-colors">Sign Up</a>';
+                attachToggleListener();
+            });
+        }
+        attachToggleListener();
+
+        // Toggle show/hide password
+        document.getElementById('toggle-password').addEventListener('click', () => {
+            const p = document.getElementById('password-input');
+            p.type = p.type === 'password' ? 'text' : 'password';
+        });
+
+        // Submit (sementara)
+        document.getElementById('auth-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+        });
+    </script>
+</body>
+</html>
