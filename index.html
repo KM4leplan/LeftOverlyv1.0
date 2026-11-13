@@ -276,45 +276,8 @@
     <!-- ==========================================
          JAVASCRIPT LOGIC (TRANSISI & OTENTIKASI)
          ========================================== -->
-    <script type="module">
-        // Import SDK Otentikasi (Siap digunakan saat konfigurasi project dimasukkan)
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { 
-            getAuth, 
-            signInWithPopup, 
-            GoogleAuthProvider, 
-            FacebookAuthProvider,
-            createUserWithEmailAndPassword,
-            signInWithEmailAndPassword
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-
-        // =========================================================================
-        // KONFIGURASI OTENTIKASI (Ganti dengan Config Project Anda nanti)
-        // =========================================================================
-        const firebaseConfig = {
-            apiKey: "MASUKKAN_API_KEY_ANDA",
-            authDomain: "project-anda.firebaseapp.com",
-            projectId: "project-anda",
-            appId: "MASUKKAN_APP_ID_ANDA"
-        };
-
-        // Inisialisasi Auth (Aman dalam try-catch agar UI tetap jalan saat mode demo)
-        let auth = null;
-        let googleProvider = null;
-        let facebookProvider = null;
-
-        try {
-            if (firebaseConfig.apiKey !== "MASUKKAN_API_KEY_ANDA") {
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                googleProvider = new GoogleAuthProvider();
-                facebookProvider = new FacebookAuthProvider();
-            }
-        } catch (err) {
-            console.warn("Mode demo UI aktif (Belum terhubung ke server Auth):", err);
-        }
-
-        // --- Elemen DOM ---
+    <!-- 1. Script Utama UI & Transisi (Berjalan langsung tanpa tergantung modul luar) -->
+    <script>
         const splashScreen = document.getElementById('splash-screen');
         const splashProgress = document.getElementById('splash-progress');
         const loginScreen = document.getElementById('login-screen');
@@ -322,18 +285,54 @@
         
         let isSignUpMode = false;
 
-        // --- 1. Animasi Splash Screen 1.5 Detik ---
+        // Fungsi Transisi Splash Screen (1.5 Detik -> Masuk ke Tahap 2)
         function runSplashSequence() {
+            splashScreen.style.display = 'flex';
             splashScreen.classList.remove('opacity-0', 'pointer-events-none', 'scale-105');
             loginScreen.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
             
             splashProgress.style.width = '0%';
-            setTimeout(() => { splashProgress.style.width = '100%'; }, 50);
+            setTimeout(() => { 
+                splashProgress.style.width = '100%'; 
+            }, 50);
 
             setTimeout(() => {
                 splashScreen.classList.add('opacity-0', 'pointer-events-none', 'scale-105');
                 loginScreen.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+                
+                // Sembunyikan splash screen sepenuhnya setelah animasi fade selesai
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                }, 700);
             }, 1500);
         }
 
-        window.addEventListener('DOMContentLoaded', runSplas
+        // Jalankan langsung saat halaman dimuat
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', runSplashSequence);
+        } else {
+            runSplashSequence();
+        }
+
+        window.replaySplash = function() {
+            statusMessage.classList.add('hidden');
+            runSplashSequence();
+        };
+
+        // Toggle Mode Login <-> Sign Up
+        const formTitle = document.getElementById('form-title');
+        const formSubtitle = document.getElementById('form-subtitle');
+        const fullnameField = document.getElementById('fullname-field');
+        const nameInput = document.getElementById('name-input');
+        const loginOptions = document.getElementById('login-options');
+        const submitBtn = document.getElementById('submit-btn');
+        const dividerText = document.getElementById('divider-text');
+        const switchModeText = document.getElementById('switch-mode-text');
+
+        function attachToggleListener() {
+            const link = document.getElementById('toggle-mode-link');
+            if (!link) return;
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                isSignUpMode = !isSignUpMode;
+                statusM
